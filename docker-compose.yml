@@ -1,0 +1,108 @@
+# version: '3.8'
+
+# services:
+#   nginx1:
+#     image: nginx:latest
+#     container_name: nginx1-container
+#     ports:
+#       - "8081:80"  
+#     volumes:
+#       - ./nginx.conf:/etc/nginx/nginx.conf:ro  
+#     networks:
+#       - app_network
+
+#   nginx2:
+#     image: nginx:latest
+#     container_name: nginx2-container
+#     ports:
+#       - "8082:80"  
+#     volumes:
+#       - ./nginx.conf:/etc/nginx/nginx.conf:ro  
+#     networks:
+#       - app_network
+
+#   busybox1:
+#     image: busybox:latest
+#     container_name: busybox1-container
+#     entrypoint: ["sh", "-c", "while true; do sleep 3600; done"]  
+#     networks:
+#       - app_network  
+#     depends_on:
+#       - nginx1
+#       - nginx2
+
+#   busybox2:
+#     image: busybox:latest
+#     container_name: busybox2-container
+#     entrypoint: ["sh", "-c", "while true; do sleep 3600; done"]  
+#     networks:
+#       - app_network
+#     depends_on:
+#       - nginx1
+#       - nginx2
+
+# networks:
+#   app_network:
+#     driver: bridge
+
+# version: '3'
+
+# services:
+#   container_a:
+#     image: nginx:latest  
+#     container_name: container_a
+#     ports:
+#       - "8081:80"  
+#     networks:
+#       - app-network
+
+ 
+#   container_b:
+#     image: nginx:latest  
+#     container_name: container_b
+#     ports:
+#       - "8082:80"  
+#     networks:
+#       - app-network
+
+  
+#   nginx:
+#     image: nginx:latest
+#     container_name: nginx
+#     ports:
+#       - "80:80"    
+#     volumes:
+#       - ./nginx.conf:/etc/nginx/nginx.conf:ro  
+#     networks:
+#       - app-network
+
+# networks:
+#   app-network:
+#     driver: bridge
+
+services:
+  nginx-proxy:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./proxy/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - nginx-web1
+      - nginx-web2
+
+  nginx-web1:
+    image: nginx:latest
+    volumes:
+      - ./web1:/usr/share/nginx/html:ro
+    expose:
+      - "80"
+
+  nginx-web2:
+    image: nginx:latest
+    volumes:
+      - ./web2:/usr/share/nginx/html:ro
+    ports:
+      - "80"
+    deploy:
+      replicas: 3
